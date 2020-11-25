@@ -1,5 +1,16 @@
+import os
+import shutil
 from os import listdir, mkdir, rmdir
 from os.path import isfile, join, isdir
+
+
+def check_length(args, length):
+    if len(args) < length:
+        print("This command should take", length - 1, "arguments", sep=" ", end="\n")
+        return False
+
+    return True
+
 
 path = "/"
 
@@ -22,6 +33,41 @@ while True:
             print("file already exists")
         else:
             mkdir(path + "/" + args[1])
+
+    elif cmd == "cp":
+        if not check_length(args, 3):
+            continue
+        file_names = [f for f in listdir(path)]
+        if args[1] not in file_names:
+            print("the file does not exist")
+            continue
+        dir_names = [f for f in listdir(path) if filter(isdir, f)]
+        if args[2] in dir_names:
+            print("file with this name already exists")
+            continue
+        shutil.copyfile(path + "/" + args[1], path + "/" + args[2])
+
+    elif cmd == "mv":
+        # 0 is mv, 1 is old file name , 2 is new file name
+        if not check_length(args, 3):
+            continue
+        file_names = [f for f in listdir(path)]
+        if args[1] not in file_names:
+            print("the file does not exist")
+            continue
+        if args[2] in file_names:
+            print("file with this name already exists")
+            continue
+        os.rename(path + "/" + args[1], path + "/" + args[2])
+
+    elif cmd == "rm":
+        if not check_length(args, 2):
+            continue
+        file_names = [f for f in listdir(path)]
+        if args[1] not in file_names:
+            print("the file does not exist")
+            continue
+        os.remove(path + "/" + args[1])
 
     elif cmd == "rmdir":
         # Here we need to get ONLY directories and not every possible file:
